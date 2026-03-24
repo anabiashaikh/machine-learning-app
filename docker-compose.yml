@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./users.db:/app/users.db
+    restart: always
+    # This ensures that the frontend can reach it internally by hostname "backend"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: always
+
+# Notice: With this setup, the frontend Nginx reverse proxies /api/ routes to backend:8000
+# Thus the React app can set VITE_API_URL=/api to reach the backend seamlessly.
